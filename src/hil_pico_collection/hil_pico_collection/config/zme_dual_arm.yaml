@@ -1,0 +1,173 @@
+schema_version: 1
+name: zme_dual_arm_rl_token
+
+robot:
+  robot_type: pico_hil
+  status_topic: /arm_status
+  command_topic: /auto_arm_cmd
+  reset_request_topic: /pico_tele/reset_request
+  change_control_mode_topic: /change_ctrl_mode
+  status_message_type: arm_interfaces.msg:ArmStatus
+  command_message_type: arm_interfaces.msg:AutonomyArmCommand
+  header_stamp_path: header.stamp
+  header_frame_id_path: header.frame_id
+
+# This is the exact order seen by the model and stored in observation.state.
+state:
+  dimension: 16
+  order:
+    - right_joint_0
+    - right_joint_1
+    - right_joint_2
+    - right_joint_3
+    - right_joint_4
+    - right_joint_5
+    - right_joint_6
+    - left_gripper
+    - left_joint_0
+    - left_joint_1
+    - left_joint_2
+    - left_joint_3
+    - left_joint_4
+    - left_joint_5
+    - left_joint_6
+    - right_gripper
+  sources:
+    right_joint_0: right_arm[0].joint_status[0]
+    right_joint_1: right_arm[1].joint_status[0]
+    right_joint_2: right_arm[2].joint_status[0]
+    right_joint_3: right_arm[3].joint_status[0]
+    right_joint_4: right_arm[4].joint_status[0]
+    right_joint_5: right_arm[5].joint_status[0]
+    right_joint_6: right_arm[6].joint_status[0]
+    left_gripper: gripper[0].joint_status[0]
+    left_joint_0: left_arm[0].joint_status[0]
+    left_joint_1: left_arm[1].joint_status[0]
+    left_joint_2: left_arm[2].joint_status[0]
+    left_joint_3: left_arm[3].joint_status[0]
+    left_joint_4: left_arm[4].joint_status[0]
+    left_joint_5: left_arm[5].joint_status[0]
+    left_joint_6: left_arm[6].joint_status[0]
+    right_gripper: gripper[1].joint_status[0]
+
+# action.order is both the model output order and the dataset action order.
+# Each binding may provide multiple robot field variants in priority order.
+action:
+  dimension: 16
+  order:
+    - right_joint_0
+    - right_joint_1
+    - right_joint_2
+    - right_joint_3
+    - right_joint_4
+    - right_joint_5
+    - right_joint_6
+    - left_gripper
+    - left_joint_0
+    - left_joint_1
+    - left_joint_2
+    - left_joint_3
+    - left_joint_4
+    - left_joint_5
+    - left_joint_6
+    - right_gripper
+  observed_sources:
+    right_joint_0: ["right_command[0]", "right_joint_command[0]"]
+    right_joint_1: ["right_command[1]", "right_joint_command[1]"]
+    right_joint_2: ["right_command[2]", "right_joint_command[2]"]
+    right_joint_3: ["right_command[3]", "right_joint_command[3]"]
+    right_joint_4: ["right_command[4]", "right_joint_command[4]"]
+    right_joint_5: ["right_command[5]", "right_joint_command[5]"]
+    right_joint_6: ["right_command[6]", "right_joint_command[6]"]
+    left_gripper: gripper_command[0]
+    left_joint_0: ["left_command[0]", "left_joint_command[0]"]
+    left_joint_1: ["left_command[1]", "left_joint_command[1]"]
+    left_joint_2: ["left_command[2]", "left_joint_command[2]"]
+    left_joint_3: ["left_command[3]", "left_joint_command[3]"]
+    left_joint_4: ["left_command[4]", "left_joint_command[4]"]
+    left_joint_5: ["left_command[5]", "left_joint_command[5]"]
+    left_joint_6: ["left_command[6]", "left_joint_command[6]"]
+    right_gripper: gripper_command[1]
+  command_targets:
+    right_joint_0: ["right_command[0]", "right_joint_command[0]"]
+    right_joint_1: ["right_command[1]", "right_joint_command[1]"]
+    right_joint_2: ["right_command[2]", "right_joint_command[2]"]
+    right_joint_3: ["right_command[3]", "right_joint_command[3]"]
+    right_joint_4: ["right_command[4]", "right_joint_command[4]"]
+    right_joint_5: ["right_command[5]", "right_joint_command[5]"]
+    right_joint_6: ["right_command[6]", "right_joint_command[6]"]
+    left_gripper: gripper_command[0]
+    left_joint_0: ["left_command[0]", "left_joint_command[0]"]
+    left_joint_1: ["left_command[1]", "left_joint_command[1]"]
+    left_joint_2: ["left_command[2]", "left_joint_command[2]"]
+    left_joint_3: ["left_command[3]", "left_joint_command[3]"]
+    left_joint_4: ["left_command[4]", "left_joint_command[4]"]
+    left_joint_5: ["left_command[5]", "left_joint_command[5]"]
+    left_joint_6: ["left_command[6]", "left_joint_command[6]"]
+    right_gripper: gripper_command[1]
+  limits:
+    right_joint_0: {min: -2.94, max: 2.94}
+    right_joint_1: {min: -1.62, max: 1.62}
+    right_joint_2: {min: -2.94, max: 2.94}
+    right_joint_3: {min: -3.00, max: 0.01}
+    right_joint_4: {min: -2.94, max: 2.94}
+    right_joint_5: {min: -0.35, max: 1.40}
+    right_joint_6: {min: -1.70, max: 1.70}
+    left_gripper: {min: -5.0, max: 55.0}
+    left_joint_0: {min: -2.94, max: 2.94}
+    left_joint_1: {min: -1.62, max: 1.62}
+    left_joint_2: {min: -2.94, max: 2.94}
+    left_joint_3: {min: -3.00, max: 0.01}
+    left_joint_4: {min: -2.94, max: 2.94}
+    left_joint_5: {min: -0.35, max: 1.40}
+    left_joint_6: {min: -1.70, max: 1.70}
+    right_gripper: {min: -5.0, max: 55.0}
+
+status:
+  control_mode: other_status[0]
+  intervention:
+    path: other_status[0]
+    equals: 5
+  model_control_enabled:
+    - {path: "other_status[0]", equals: 1}
+    - {path: "other_status[1]", equals: 1}
+
+images:
+  top:
+    topic: /camera_dcw2/custom_cam_color_1M
+    message_type: custom_image_msg.msg:Image1m
+    width: 640
+    height: 480
+    channels: 3
+    resize: false
+  left_wrist:
+    topic: /camera_dcl_left/custom_cam_color_1M
+    message_type: custom_image_msg.msg:Image1m
+    width: 640
+    height: 480
+    channels: 3
+    resize: false
+  right_wrist:
+    topic: /camera_dcl_right/custom_cam_color_1M
+    message_type: custom_image_msg.msg:Image1m
+    width: 640
+    height: 480
+    channels: 3
+    resize: false
+
+inference:
+  action_horizon: 20
+  model_hz: 20
+  command_hz: 30
+
+mode_controller:
+  factory: hil_pico_collection.adapters.arm_interfaces:create_configured_mode_controller
+  options:
+    mode_service_type: arm_interfaces.srv:TrajFollowMode
+    secondary_service_type: arm_interfaces.srv:TrajFollowSecondaryMode
+    executer_service: /switch_arm_executer_mode
+    secondary_service: /switch_arm_secondary_mode
+    autonomy_primary: 1
+    autonomy_secondary: 1
+    teleoperation_primary: 5
+    service_timeout_s: 0.25

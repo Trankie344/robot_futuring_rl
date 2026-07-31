@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1180, initial-scale=1" />
+    <title>Tri-State + Completion Labeler</title>
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar" aria-label="Task status">
+        <div class="brand-block">
+          <span class="eyebrow">Desktop WebUI</span>
+          <h1>Tri-State + Completion Labeler</h1>
+        </div>
+        <div class="topbar-meta" aria-live="polite">
+          <div class="meta-pill">
+            <span>Dataset</span>
+            <strong id="datasetName">Loading</strong>
+          </div>
+          <div class="meta-pill">
+            <span>Task</span>
+            <strong id="taskMeta">Waiting for task</strong>
+          </div>
+          <div class="meta-pill">
+            <span>Lock</span>
+            <strong id="lockMeta">Unlocked</strong>
+          </div>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="stage-card" aria-label="Synchronized videos">
+          <div class="video-grid">
+            <figure class="video-tile video-tile--main" data-camera-role="main">
+              <div class="camera-badge">
+                <span>Main</span>
+                <strong id="cameraLabelMain">observation.images.ground</strong>
+              </div>
+              <div class="phase-badge" data-phase-badge>FULL EPISODE</div>
+              <video id="videoGround" muted playsinline preload="auto"></video>
+              <figcaption>Main view</figcaption>
+            </figure>
+
+            <figure class="video-tile video-tile--side" data-camera-role="left">
+              <div class="camera-badge">
+                <span>Left</span>
+                <strong id="cameraLabelLeft">observation.images.left_wrist</strong>
+              </div>
+              <div class="phase-badge" data-phase-badge>FULL EPISODE</div>
+              <video id="videoLeftWrist" muted playsinline preload="auto"></video>
+              <figcaption>Left wrist</figcaption>
+            </figure>
+
+            <figure class="video-tile video-tile--side" data-camera-role="right">
+              <div class="camera-badge">
+                <span>Right</span>
+                <strong id="cameraLabelRight">observation.images.right_wrist</strong>
+              </div>
+              <div class="phase-badge" data-phase-badge>FULL EPISODE</div>
+              <video id="videoRightWrist" muted playsinline preload="auto"></video>
+              <figcaption>Right wrist</figcaption>
+            </figure>
+          </div>
+
+          <div class="timeline" aria-label="Playback and selection controls">
+            <button id="playButton" class="play-button" type="button" aria-pressed="false">Play</button>
+            <div class="timeline-main">
+              <div class="timeline-labels" aria-hidden="true">
+                <span>Select interval</span>
+                <span id="selectionSummary">--</span>
+              </div>
+              <div id="timelineTrack" class="timeline-track" aria-hidden="true">
+                <div id="expertOverlay" class="expert-overlay"></div>
+                <div id="selectionBand" class="selection-band"></div>
+                <div id="progressBar" class="timeline-fill"></div>
+              </div>
+              <div class="range-grid">
+                <div class="range-label-action">
+                  <label for="selectionStart">Start frame</label>
+                  <button id="jumpUnlabeledStartButton" class="jump-unlabeled-button js-task-control" type="button" title="Jump to first unlabeled interval" aria-label="Jump start frame to the first unlabeled interval">Gap</button>
+                </div>
+                <input id="selectionStart" class="js-task-control" type="range" min="0" max="1" value="0" step="1" />
+                <input id="selectionStartInput" class="range-number js-task-control" type="number" min="0" max="1" value="0" step="1" aria-label="Start frame number" />
+                <label for="selectionEnd">End frame</label>
+                <input id="selectionEnd" class="js-task-control" type="range" min="1" max="1" value="1" step="1" />
+                <input id="selectionEndInput" class="range-number js-task-control" type="number" min="1" max="1" value="1" step="1" aria-label="End frame number" />
+              </div>
+            </div>
+            <div class="playback-row">
+              <label for="speedSelect">Playback speed</label>
+              <select id="speedSelect" name="speedSelect">
+                <option value="0.25">0.25x</option>
+                <option value="0.5">0.5x</option>
+                <option value="0.75">0.75x</option>
+                <option value="1">1.0x</option>
+              </select>
+              <span id="timeMeta" class="time-meta">0.00 / 0.00s</span>
+            </div>
+          </div>
+
+          <div class="hotkey-strip" aria-label="Hotkeys">
+            <span><kbd>Space</kbd> Play / pause</span>
+            <span><kbd>1</kbd> +1</span>
+            <span><kbd>2</kbd> -1</span>
+            <span><kbd>3</kbd> 0</span>
+            <span><kbd>D</kbd> Final frame = 2</span>
+            <span><kbd>Enter</kbd> Submit</span>
+            <span><kbd>S</kbd> Skip</span>
+          </div>
+        </section>
+
+        <aside class="side-panel" aria-label="Annotation controls">
+          <section class="panel-card rules-card">
+            <div class="section-heading">
+              <span>States</span>
+              <h2>Frame states</h2>
+            </div>
+            <dl class="rule-list">
+              <div><dt class="rule-positive">Progressive</dt><dd>state +1 / key 1</dd></div>
+              <div><dt class="rule-negative">Regressive</dt><dd>state -1 / key 2</dd></div>
+              <div><dt class="rule-neutral">Stagnant</dt><dd>state 0 / key 3</dd></div>
+              <div><dt class="rule-done">Task complete (final frame only)</dt><dd>state 2 / key D</dd></div>
+            </dl>
+            <!-- Progressive(+1)����Ч��չ Regressive(-1)���к���չ Stagnant(0)������Ч��չ Skip / Unclear���������ط���򸴲� -->
+          </section>
+
+          <section class="action-stack" aria-label="Interval annotation">
+            <button id="openLabelModalButton" class="submit-button js-task-control" type="button">
+              <span>Apply selected range</span>
+              <strong id="selectedRangeMeta">--</strong>
+            </button>
+
+            <div class="coverage-panel">
+              <div class="section-heading">
+                <span>Coverage</span>
+                <h2 id="coverageMeta">0 / 0 frames</h2>
+              </div>
+              <div class="coverage-track" aria-hidden="true">
+                <div id="coverageFill" class="coverage-fill"></div>
+              </div>
+            </div>
+
+            <div id="segmentList" class="segment-list" aria-label="Labeled intervals"></div>
+
+            <button id="submitButton" class="submit-button js-task-control" type="button">
+              <span>Enter - Submit frame labels</span>
+              <strong>Publishes ready labels when all episodes are complete</strong>
+            </button>
+            <button id="skipButton" class="skip-button js-task-control" type="button">
+              <span>S - Skip / Unclear</span>
+              <strong>Return this episode to the queue</strong>
+            </button>
+          </section>
+
+          <section class="progress-card panel-card" aria-label="Queue progress">
+            <div class="section-heading">
+              <span>Queue</span>
+              <h2>Progress status</h2>
+            </div>
+            <div class="progress-grid">
+              <article><span>completed</span><strong id="completedCount">0</strong></article>
+              <article><span>pending</span><strong id="pendingCount">0</strong></article>
+              <article><span>locked</span><strong id="lockedCount">0</strong></article>
+              <article><span>review</span><strong id="reviewCount">0</strong></article>
+            </div>
+          </section>
+        </aside>
+      </main>
+
+      <footer class="footer-bar">
+        <span id="message" class="status-message" role="status" aria-live="polite">Ready</span>
+        <span>export fields: dataset_id, episode_index, start_frame, end_frame, frame_labels, done, done_frame_count, created_at</span>
+      </footer>
+    </div>
+
+    <dialog id="labelModal" class="label-modal">
+      <form method="dialog">
+        <div class="modal-head">
+          <strong id="modalRangeText">Selected interval</strong>
+          <button id="closeLabelModalButton" class="icon-button" value="cancel" type="submit" aria-label="Close">x</button>
+        </div>
+        <div class="modal-actions">
+          <button class="state-button state-button--positive" type="button" data-state="1">+1</button>
+          <button class="state-button state-button--negative" type="button" data-state="-1">-1</button>
+          <button class="state-button state-button--neutral" type="button" data-state="0">0</button>
+          <button class="state-button state-button--done" type="button" data-state="2">complete (2)</button>
+        </div>
+        <button id="deleteSelectionButton" class="delete-selection-button" type="button">Delete interval</button>
+      </form>
+    </dialog>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

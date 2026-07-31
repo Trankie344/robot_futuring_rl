@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hil-pico-collection"
+version = "0.1.0"
+description = "Robot-agnostic HIL PICO correction collection and RL Token bridge"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.100",
+    "httpx>=0.24",
+    "numpy>=1.22.4,<2.0.0",
+    "openpi-client",
+    "opencv-python>=4.8",
+    "pandas>=2.0",
+    "pyarrow>=12.0",
+    "PyYAML>=6.0",
+    "uvicorn>=0.23",
+]
+
+[project.scripts]
+hil-pico-recorder = "hil_pico_collection.ros.recorder_node:main"
+hil-pico-mode-switcher = "hil_pico_collection.ros.mode_switcher:main"
+hil-pico-rl-token-bridge = "hil_pico_collection.bridge.ros_node:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["hil_pico_collection*"]
+
+[tool.setuptools.package-data]
+hil_pico_collection = ["config/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["hil_pico_collection"]
+python_files = ["test_*.py", "*_test.py"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

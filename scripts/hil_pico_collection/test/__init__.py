@@ -1,0 +1,1 @@
+"""Launch script tests."""

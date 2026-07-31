@@ -1,0 +1,22 @@
+pico_sdk_bridge:
+  ros__parameters:
+    state_topic: /pico_tele/state
+    frame_id: pico_tracking_origin
+    device_id: ""
+    sdk_init_retry_s: 2.0
+
+pico_gesture_mapper:
+  ros__parameters:
+    state_topic: /pico_tele/state
+    button_event_topic: /pico_tele/button_event
+    operator_command_topic: /pico_tele/operator_command
+    hold_duration_s: 1.0
+    input_timeout_s: 0.25
+
+pico_command_router:
+  ros__parameters:
+    operator_command_topic: /pico_tele/operator_command
+    reset_topic: /pico_tele/reset_request
+    toggle_topic: /change_ctrl_mode
+    enable_reset: true
+    enable_toggle: true
